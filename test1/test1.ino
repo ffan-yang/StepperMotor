@@ -32,7 +32,7 @@
 #include <uStepperS.h>
 
 uStepperS stepper;
-float angle = 20.0;      //amount of degrees to move
+float angle = 15.0;      //amount of degrees to move
 float initialAngle = 0;
 // define the digital from labview
 int remPin = 7;
@@ -43,6 +43,7 @@ int lastButtonStateRising_rem = 1;
 int buttonStateRising_bac = 1;
 int lastButtonStateRising_bac = 1;
 unsigned long millisPrevious_rem;
+unsigned long startMoveTime;
 unsigned long millisPrevious_bac;
 byte debounceInterval = 0; // milliseconds
 
@@ -52,27 +53,33 @@ void setup() {
   pinMode(remPin, INPUT);  // 
   pinMode(bacPin, INPUT);    
   //define stepper motpr
-  stepper.setMaxAcceleration(20000);     //use an acceleration of 2000 fullsteps/s^2
-  stepper.setMaxVelocity(72000);          //Max velocity of 500 fullsteps/s
+  stepper.setMaxAcceleration(10000000);     //use an acceleration of 2000 fullsteps/s^2
+  stepper.setMaxVelocity(200.0*200.0/60.0);          //Max velocity of 500 fullsteps/s
  // stepper.checkOrientation(30.0);       //Check orientation of motor connector with +/- 30 microsteps movement
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
   
-  if(!stepper.getMotorState())          //If motor is at standstill
-  {
+  //stepper.getMotorState())          //If motor is at standstill
+  
    // stepper.encoder.setHome();
 
     buttonStateRising_rem = digitalRead(remPin);
     if((buttonStateRising_rem == HIGH) && (lastButtonStateRising_rem == LOW)){
       if(millis() - millisPrevious_rem >= debounceInterval){
         Serial.println("There was a rising edge on pin 7");
-        stepper.moveToAngle(angle); 
-        Serial.println("remove");
+        startMoveTime = millis();
+        Serial.println(startMoveTime);
+        stepper.moveAngle(angle); 
+
+        while(stepper.getMotorState(POSITION_REACHED));
+        
+        millisPrevious_rem = millis();
+        Serial.println(millisPrevious_rem - startMoveTime);
+        Serial.println("removed");
       }
-      millisPrevious_rem = millis();
-      Serial.println(millisPrevious_rem);
+      
     }
     lastButtonStateRising_rem = buttonStateRising_rem;
 // back
@@ -80,11 +87,17 @@ void loop() {
     if((buttonStateRising_bac == HIGH) && (lastButtonStateRising_bac == LOW)){
       if(millis() - millisPrevious_bac >= debounceInterval){
         Serial.println("There was a rising edge on pin 8");
-        stepper.moveToAngle(-angle); 
+        startMoveTime = millis();
+        Serial.println(startMoveTime);
+        stepper.moveAngle(-angle); 
+
+        while(stepper.getMotorState(POSITION_REACHED));
+        
+        millisPrevious_bac = millis();
+        Serial.println(millisPrevious_bac - startMoveTime);
         Serial.println("bring back");
       }
-      millisPrevious_bac = millis();
-      Serial.println(millisPrevious_bac);
+      
     }
     lastButtonStateRising_bac = buttonStateRising_bac;
 
@@ -103,7 +116,7 @@ void loop() {
     
     } 
     */
-  }
+  
 }
 /*
 int RisingEdge(pin_num,lastButtonStateRising,debounceInterval,millisPrevious){
