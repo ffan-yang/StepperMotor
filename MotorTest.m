@@ -16,7 +16,7 @@ classdef MotorTest < matlab.apps.AppBase
             
                 % define the current animal folder
                 basedirLabVIEW = '\\157.136.60.15\EqShulz\Fan\DATA_MICE_FAN\DATA_FY3\LABVIEW';
-                basedirHIRIS = '\\\\157.136.60.15\EqShulz\Fan\DATA_MICE_FAN\DATA_FY3\HIRIS';
+                basedirHIRIS = '\\157.136.60.15\EqShulz\Fan\DATA_MICE_FAN\DATA_FY3\HIRIS';
 %                basedirROI = 'C:\Users\YangF\Desktop\DATA\ROI';
                 % selet the folder
                 s = struct(...
@@ -82,7 +82,8 @@ classdef MotorTest < matlab.apps.AppBase
                  stamp_cell = cellfun(@(x) x(x~=0), stamp_cell,'UniformOutput',false);
                  stamp_names = {'rewardStart','BigtouchStamps', 'trialFinish', ...
                                     'roi1Touch', 'OmissionTrial','roi1Detach',...
-                                    'roi2Touch','rewardFinish','StandardRecoedingIndex'};
+                                    'roi2Touch','rewardFinish','StandardRecoedingIndex',...
+                                    'noWhiskingBoutRecordedList','WhiskingBoutRecordedList'};
                  % cell to structure
                  timeStamps = cell2struct(stamp_cell, stamp_names, 2);
                  app.data.timeStamps = timeStamps;

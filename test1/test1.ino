@@ -78,6 +78,7 @@ void loop() {
         millisPrevious_rem = millis();
         Serial.println(millisPrevious_rem - startMoveTime);
         Serial.println("removed");
+        getMotorState();
       }
       
     }
